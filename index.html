@@ -9,16 +9,19 @@
 
     <link rel="stylesheet" type="text/css" href="css/style.css"/>
     <script src="js/main.js"></script>
+    <script src="js/jquery-1.12.0.min.js"></script>
+    
 </head>
 
 <body>
-  <span class=content_text> Show Data: </span><input type="checkbox" id="show_check"><br>
-  <span class=content_text>Save Data locally:</span> <input type="checkbox" id="local_check"><br>
-  <span class=content_text>Send Data over Bluetooth:</span> <input type="checkbox" id="bt_check">
+  <span class=content_text>Acceleration: </span> <input type="checkbox" id="accel_check"><br>
+  <span class=content_text>Heart Rate: </span> <input type="checkbox" id="hr_check">
   
-  		<div class=content_text id=xaccel></div><br>
-  		<div class=content_text id=yaccel></div><br>
-  		<div class=content_text id=zaccel></div><br>
+	    <div class=content_text id=xaccel>X:</div>
+  		<div class=content_text id=yaccel>Y:</div>
+  		<div class=content_text id=zaccel>Z:</div>
+  		<div class=content_text id=hr>HR:</div>
+  	    <button id=delete_btn>Delete files</button> 
 
 </body>
 </html>
