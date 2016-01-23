@@ -3,7 +3,6 @@ var hrDataPath;
 var ax;
 var ay;
 var az;
-var saveAccel;
 
 window.onload = function () {
 
@@ -18,8 +17,13 @@ window.onload = function () {
 
 
     //--------start of my code------------
-    //other sensors (e.g. webapis.sensorService.getDefaultSensor("LIGHT") do not work, because of old version
-
+    //other sensors (e.g. webapis.sensorService.getDefaultSensor("LIGHT") do not work, because of old tizen version(2.3 needed)
+    //alarm nicht sinnvoll, da dann komplette app neu geladen wird, ist kaum cancelbar
+    //am besten: web services, aber auch erst ab tizen 2.3
+    
+    ax=0;
+    ay=0;
+    az=0;
 
     //do not go to sleep
     tizen.power.request("CPU", "CPU_AWAKE");
@@ -31,12 +35,11 @@ window.onload = function () {
     //read acceleration values when motion event occurs
     //TODO get average acceleration?
     window.addEventListener('devicemotion', function(e) {
-        if(saveAccel){
-        	ax = e.acceleration.x;
-        	ay = e.acceleration.y;
-        	az = e.acceleration.z;
-    		saveSensorData();
-    	}
+
+        	ax = e.acceleration.x+ax;
+        	ay = e.acceleration.y+ay;
+        	az = e.acceleration.z+az;
+
     });
     
        
@@ -48,14 +51,12 @@ window.onload = function () {
 	        //local has been checked, initialize file and write data
 	    	console.log("initializing local file for accel data...");
 	    	initializeLocal();
-	    	saveAccel=true;
-//	    	saveIntervalId=setInterval(function(){ 
-//	    	  saveSensorData();
-//	        }, 1000);
+	    	saveIntervalId=setInterval(function(){ 
+	    	  saveSensorData();
+	        }, 1000);
 	    	
 	    } else {
 	        //local has been unchecked, stop saving
-	    	saveAccel=false;
 	    	console.log("stopping local saving of accel");
 	    	clearInterval(saveIntervalId);
 	    }
@@ -98,7 +99,10 @@ saveSensorData = function(){
 			//write data as csv
 			fs.write(Date.now()+","+ax+","+ay+","+az+"\n");
 			fs.close();
-			}, null, "UTF-8");
+			ax=0;
+			ay=0;
+			az=0;
+		}, null, "UTF-8");
 	});
 }
 
@@ -108,10 +112,10 @@ saveHrData = function(){
 	if(!hrSem){
 		hrSem=true;
 		window.webapis.motion.start("HRM", function(hrm) {
-			document.getElementById("hr").innerHTML ="HR: "+ hrm.heartRate;
 			tizen.filesystem.resolve(hrDataPath,function(file){
 				file.openStream("a", function(fs){
 					if(hrm.heartRate>0){
+						document.getElementById("hr").innerHTML ="HR: "+ hrm.heartRate;
 						fs.write(Date.now()+","+hrm.heartRate+"\n");
 						window.webapis.motion.stop("HRM");
 						hrSem=false;
