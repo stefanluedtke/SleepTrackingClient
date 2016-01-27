@@ -3,6 +3,8 @@ var hrDataPath;
 var ax;
 var ay;
 var az;
+var saveAccel;
+var counter;
 
 window.onload = function () {
 
@@ -24,7 +26,8 @@ window.onload = function () {
     ax=0;
     ay=0;
     az=0;
-
+    counter=0;
+    saveAccel=false;
     //do not go to sleep
     tizen.power.request("CPU", "CPU_AWAKE");
     
@@ -35,11 +38,12 @@ window.onload = function () {
     //read acceleration values when motion event occurs
     //TODO get average acceleration?
     window.addEventListener('devicemotion', function(e) {
-
-        	ax = e.acceleration.x+ax;
-        	ay = e.acceleration.y+ay;
-        	az = e.acceleration.z+az;
-
+    	if(saveAccel){
+        		counter++;
+            	ax = e.acceleration.x+ax;
+            	ay = e.acceleration.y+ay;
+            	az = e.acceleration.z+az;
+    	}
     });
     
        
@@ -51,6 +55,7 @@ window.onload = function () {
 	        //local has been checked, initialize file and write data
 	    	console.log("initializing local file for accel data...");
 	    	initializeLocal();
+	    	saveAccel=true;
 	    	saveIntervalId=setInterval(function(){ 
 	    	  saveSensorData();
 	        }, 1000);
@@ -58,7 +63,8 @@ window.onload = function () {
 	    } else {
 	        //local has been unchecked, stop saving
 	    	console.log("stopping local saving of accel");
-	    	clearInterval(saveIntervalId);
+//	    	clearInterval(saveIntervalId);
+	    	saveAccel=false;
 	    }
 	};
 	
@@ -90,20 +96,24 @@ window.onload = function () {
 
 //function that saves accel values
 saveSensorData = function(){
-    document.getElementById("xaccel").innerHTML = "X: "+ ax;
-    document.getElementById("yaccel").innerHTML = "Y: "+ ay;
-    document.getElementById("zaccel").innerHTML = "Z: "+ az;
-	//open file and write data
-	tizen.filesystem.resolve(accelDataPath,function(file){
-		file.openStream("a", function(fs){
-			//write data as csv
-			fs.write(Date.now()+","+ax+","+ay+","+az+"\n");
-			fs.close();
-			ax=0;
-			ay=0;
-			az=0;
-		}, null, "UTF-8");
-	});
+	if(counter!=0){
+	    document.getElementById("xaccel").innerHTML = "X: "+ ax/counter;
+	    document.getElementById("yaccel").innerHTML = "Y: "+ ay/counter;
+	    document.getElementById("zaccel").innerHTML = "Z: "+ az/counter;
+		//open file and write data
+		tizen.filesystem.resolve(accelDataPath,function(file){
+			file.openStream("a", function(fs){
+				//write data as csv
+				fs.write(Date.now()+","+ax/counter+","+ay/counter+","+az/counter+"\n");
+				fs.close();
+			    ax=0;
+			    ay=0;
+			    az=0;
+			    counter=0;
+			}, null, "UTF-8");
+		});
+	}
+
 }
 
 var hrSem = false;
