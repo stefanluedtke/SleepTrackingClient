@@ -1,21 +1,21 @@
 var accelDataPath;
 var hrDataPath;
-var ax;
-var ay;
-var az;
+var accelData;
+var orienData;
 var saveAccel;
-var counter;
+var saveOrien;
+
 
 window.onload = function () {
 
     // add eventListener for tizenhwkey
-    document.addEventListener('tizenhwkey', function(e) {
-        if(e.keyName == "back")
-	try {
-	    tizen.application.getCurrentApplication().exit();
-	} catch (ignore) {
-	}
-    });
+//    document.addEventListener('tizenhwkey', function(e) {
+//        if(e.keyName == "back")
+//	try {
+//	    tizen.application.getCurrentApplication().exit();
+//	} catch (ignore) {
+//	}
+//    });
 
 
     //--------start of my code------------
@@ -23,11 +23,12 @@ window.onload = function () {
     //alarm nicht sinnvoll, da dann komplette app neu geladen wird, ist kaum cancelbar
     //am besten: web services, aber auch erst ab tizen 2.3
     
-    ax=0;
-    ay=0;
-    az=0;
-    counter=0;
+    //TODO bei back-key nicht aus, nur in hintergrund?
+    accelData=[];
+    orienData=[];
+
     saveAccel=false;
+    saveOrien=false;
     //do not go to sleep
     tizen.power.request("CPU", "CPU_AWAKE");
     
@@ -39,10 +40,19 @@ window.onload = function () {
     //TODO get average acceleration?
     window.addEventListener('devicemotion', function(e) {
     	if(saveAccel){
-        		counter++;
-            	ax = e.acceleration.x+ax;
-            	ay = e.acceleration.y+ay;
-            	az = e.acceleration.z+az;
+            	accelData.push({time: Date.now(), x: e.acceleration.x, y: e.acceleration.y, z: e.acceleration.z});
+            	if(accelData.length>20){
+            		saveSensorData();
+            	}
+    	}
+    });
+    
+    window.addEventListener('deviceorientation', function(e) {
+    	if(saveOrien){
+            	orienData.push({time: Date.now(), alpha: e.alpha, beta: e.beta, gamma: e.gamma});
+            	if(orienData.length>20){
+            		saveOrientation();
+            	}
     	}
     });
     
@@ -56,17 +66,40 @@ window.onload = function () {
 	    	console.log("initializing local file for accel data...");
 	    	initializeLocal();
 	    	saveAccel=true;
-	    	saveIntervalId=setInterval(function(){ 
-	    	  saveSensorData();
-	        }, 1000);
+	    	accelData=[];
+//	    	saveIntervalId=setInterval(function(){ 
+//	    	  saveSensorData();
+//	        }, 1000);
 	    	
 	    } else {
 	        //local has been unchecked, stop saving
 	    	console.log("stopping local saving of accel");
-//	    	clearInterval(saveIntervalId);
+	    	//clearInterval(saveIntervalId);
 	    	saveAccel=false;
 	    }
 	};
+	
+	
+	   var orienIntervalId;
+	   document.getElementById("orien_check").onchange=function(event) {
+		    var checkbox = event.target;
+		    if (checkbox.checked) {
+		        //local has been checked, initialize file and write data
+		    	console.log("initializing local file for orien data...");
+		    	initializeOrientation();
+		    	saveOrien=true;
+		    	orienData=[];
+//		    	orienIntervalId=setInterval(function(){ 
+//		    	  saveOrientation();
+//		        }, 1000);
+		    	
+		    } else {
+		        //local has been unchecked, stop saving
+		    	console.log("stopping local saving of accel");
+		    	//clearInterval(orienIntervalId);
+		    	saveOrien=false;
+		    }
+		};
 	
 	   //look for checked checkboxes and initialize accordingly
 	   var hrIntervalId;
@@ -96,20 +129,40 @@ window.onload = function () {
 
 //function that saves accel values
 saveSensorData = function(){
-	if(counter!=0){
-	    document.getElementById("xaccel").innerHTML = "X: "+ ax/counter;
-	    document.getElementById("yaccel").innerHTML = "Y: "+ ay/counter;
-	    document.getElementById("zaccel").innerHTML = "Z: "+ az/counter;
+	if(accelData.length>1){
+	    document.getElementById("xaccel").innerHTML = "X: "+ accelData[1].x;
+	    document.getElementById("yaccel").innerHTML = "Y: "+ accelData[1].y;
+	    document.getElementById("zaccel").innerHTML = "Z: "+ accelData[1].z;
 		//open file and write data
 		tizen.filesystem.resolve(accelDataPath,function(file){
 			file.openStream("a", function(fs){
 				//write data as csv
-				fs.write(Date.now()+","+ax/counter+","+ay/counter+","+az/counter+"\n");
+				accelData.forEach(function(element){
+					fs.write(element.time+","+element.x+","+element.y+","+element.z+"\n");
+				});
 				fs.close();
-			    ax=0;
-			    ay=0;
-			    az=0;
-			    counter=0;
+			    accelData=[];
+			}, null, "UTF-8");
+		});
+	}
+
+}
+
+
+saveOrientation = function(){
+	if(orienData.length>1){
+	    document.getElementById("alpha").innerHTML = "Alpa: "+ orienData[1].alpha;
+	    document.getElementById("beta").innerHTML = "Beta: "+ orienData[1].beta;
+	    document.getElementById("gamma").innerHTML = "Gamma: "+ orienData[1].gamma;
+		//open file and write data
+		tizen.filesystem.resolve(orienDataPath,function(file){
+			file.openStream("a", function(fs){
+				//write data as csv
+				orienData.forEach(function(element){
+					fs.write(element.time+","+element.alpha+","+element.beta+","+element.gamma+"\n");
+				});
+				fs.close();
+			    orienData=[];
 			}, null, "UTF-8");
 		});
 	}
@@ -148,6 +201,21 @@ initializeLocal = function(){
 		  file.openStream("w", function(fs){
 				//write header
 				fs.write("time,x,y,z\n");
+				fs.close();
+				}, null, "UTF-8");
+	  });
+}
+
+initializeOrientation = function(){
+	  //create new accelData-File with timestamp in /opt/usr/media/Documents
+	  var orienDataName = "orienData_"+Date.now()+".csv";
+	  orienDataPath = "documents/"+orienDataName;
+	  console.log("using file: "+orienDataPath);
+	  tizen.filesystem.resolve("documents", function(path){
+		  var file = path.createFile(orienDataName);
+		  file.openStream("w", function(fs){
+				//write header
+				fs.write("time,alpha,beta,gamma\n");
 				fs.close();
 				}, null, "UTF-8");
 	  });
