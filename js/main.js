@@ -4,6 +4,7 @@ var accelData;
 var orienData;
 var saveAccel;
 var saveOrien;
+var currPower;
 
 
 window.onload = function () {
@@ -19,13 +20,31 @@ window.onload = function () {
 
 
     //--------start of my code------------
-    //other sensors (e.g. webapis.sensorService.getDefaultSensor("LIGHT") do not work, because of old tizen version(2.3 needed)
-    //alarm nicht sinnvoll, da dann komplette app neu geladen wird, ist kaum cancelbar
     //am besten: web services, aber auch erst ab tizen 2.3
     
-    //TODO bei back-key nicht aus, nur in hintergrund?
+	//logging
+	var logName = "log_"+Date.now()+".txt";
+	var logPath = "documents/"+logName;
+	  tizen.filesystem.resolve("documents", function(path){
+		  var file = path.createFile(logName);
+	  });
+	  
+	  window.onerror = function (msg, url, num) {
+		  tizen.filesystem.resolve(logPath, function(file){
+	  		  file.openStream("a", function(fs){
+	  				fs.write("Error: " + msg + "\nURL: " + url + "\nLine: " + num+"\n");
+	  				fs.close();
+	  				}, null, "UTF-8");
+	  	  });
+		    return true;
+		};
+	//end of logging
+		
+		
+	
     accelData=[];
     orienData=[];
+    currPower=0;
 
     saveAccel=false;
     saveOrien=false;
@@ -41,7 +60,7 @@ window.onload = function () {
     window.addEventListener('devicemotion', function(e) {
     	if(saveAccel){
             	accelData.push({time: Date.now(), x: e.acceleration.x, y: e.acceleration.y, z: e.acceleration.z});
-            	if(accelData.length>20){
+            	if(accelData.length>25){
             		saveSensorData();
             	}
     	}
@@ -50,7 +69,7 @@ window.onload = function () {
     window.addEventListener('deviceorientation', function(e) {
     	if(saveOrien){
             	orienData.push({time: Date.now(), alpha: e.alpha, beta: e.beta, gamma: e.gamma});
-            	if(orienData.length>20){
+            	if(orienData.length>17){
             		saveOrientation();
             	}
     	}
@@ -133,12 +152,16 @@ saveSensorData = function(){
 	    document.getElementById("xaccel").innerHTML = "X: "+ accelData[1].x;
 	    document.getElementById("yaccel").innerHTML = "Y: "+ accelData[1].y;
 	    document.getElementById("zaccel").innerHTML = "Z: "+ accelData[1].z;
+	    //update power
+		tizen.systeminfo.getPropertyValue("BATTERY", function(battery){
+			currPower=battery.level;
+		});
 		//open file and write data
 		tizen.filesystem.resolve(accelDataPath,function(file){
 			file.openStream("a", function(fs){
 				//write data as csv
 				accelData.forEach(function(element){
-					fs.write(element.time+","+element.x+","+element.y+","+element.z+"\n");
+					fs.write(element.time+","+currPower+","+element.x+","+element.y+","+element.z+"\n");
 				});
 				fs.close();
 			    accelData=[];
@@ -154,12 +177,16 @@ saveOrientation = function(){
 	    document.getElementById("alpha").innerHTML = "Alpa: "+ orienData[1].alpha;
 	    document.getElementById("beta").innerHTML = "Beta: "+ orienData[1].beta;
 	    document.getElementById("gamma").innerHTML = "Gamma: "+ orienData[1].gamma;
+	    //update power
+		tizen.systeminfo.getPropertyValue("BATTERY", function(battery){
+			currPower=battery.level;
+		});
 		//open file and write data
 		tizen.filesystem.resolve(orienDataPath,function(file){
 			file.openStream("a", function(fs){
 				//write data as csv
 				orienData.forEach(function(element){
-					fs.write(element.time+","+element.alpha+","+element.beta+","+element.gamma+"\n");
+					fs.write(element.time+","+currPower+","+element.alpha+","+element.beta+","+element.gamma+"\n");
 				});
 				fs.close();
 			    orienData=[];
@@ -200,7 +227,7 @@ initializeLocal = function(){
 		  var file = path.createFile(accelDataName);
 		  file.openStream("w", function(fs){
 				//write header
-				fs.write("time,x,y,z\n");
+				fs.write("time,power,x,y,z\n");
 				fs.close();
 				}, null, "UTF-8");
 	  });
@@ -215,7 +242,7 @@ initializeOrientation = function(){
 		  var file = path.createFile(orienDataName);
 		  file.openStream("w", function(fs){
 				//write header
-				fs.write("time,alpha,beta,gamma\n");
+				fs.write("time,power,alpha,beta,gamma\n");
 				fs.close();
 				}, null, "UTF-8");
 	  });
