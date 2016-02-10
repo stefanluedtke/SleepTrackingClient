@@ -1,11 +1,10 @@
 setwd("/home/stefan/workspace-tizen2/SleepTracking/r")
 
-#1. welche sensoren gehen, welche nicht
-#2. samplingfreq 25hz, immer speichern: akku nach 6h leer
-# nur 1x pro sekunde speichern, mittelwert: haelt 13 stunden
-# problem bei 25 Hz und nur 1x pro sekunde speichern: werden nicht gleichfoermig gesampled, siehe:
-# (vll sind ausreisser immer dann, wenn ich daten speicher?)
-#weiteres problem: Aufzeichnung bricht nach ca 5 stunden ab, wenn beides aufgezeichnet. wenn nur o, dann nicht
+#HR-Daten: (hab nur ruhig dagesessen)
+h=read.csv("data/hrData_1455101103728.csv")
+h$time=(h$time-h$time[1])/1000
+plot(h$time,h$hr,type="l")
+
 a=read.csv("data/01-28/accelData_1454000916568.csv") #diese daten sind mit hoechstmoeglicher frequenz gesampled
 diff=sapply(1:579,function(i){a$time[i+1]-a$time[i]})
 #plot(diff)
