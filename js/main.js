@@ -60,7 +60,7 @@ window.onload = function () {
     window.addEventListener('devicemotion', function(e) {
     	if(saveAccel){
             	accelData.push({time: Date.now(), x: e.acceleration.x, y: e.acceleration.y, z: e.acceleration.z});
-            	if(accelData.length>25){
+            	if(accelData.length>(25*60)){
             		saveSensorData();
             	}
     	}
@@ -69,7 +69,7 @@ window.onload = function () {
     window.addEventListener('deviceorientation', function(e) {
     	if(saveOrien){
             	orienData.push({time: Date.now(), alpha: e.alpha, beta: e.beta, gamma: e.gamma});
-            	if(orienData.length>17){
+            	if(orienData.length>(17*60)){
             		saveOrientation();
             	}
     	}

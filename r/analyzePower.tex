@@ -1,0 +1,35 @@
+\documentclass{article}
+
+\usepackage{Sweave}
+\begin{document}
+\input{analyzePower-concordance}
+
+\title{Analyse der Akkulaufzeit}
+\maketitle
+
+\begin{itemize}
+\item Beschleunigungsdaten 1x pro Sekunde speichern, nur Beschleunigungsdaten aufgezeichnet
+\begin{Schunk}
+\begin{Soutput}
+[1] "36826"
+\end{Soutput}
+\end{Schunk}
+\includegraphics{analyzePower-001}
+\item Beschleunigungsdaten 1x pro Minute speichern, nur Beschleunigungsdaten aufgezeichnet
+\begin{Schunk}
+\begin{Soutput}
+[1] "39337"
+\end{Soutput}
+\end{Schunk}
+\includegraphics{analyzePower-002}
+\item Lagedaten 1x pro Sekunde aufzeichnen, nur Lagedaten aufgezeichnet
+\begin{Schunk}
+\begin{Soutput}
+[1] "38808"
+\end{Soutput}
+\end{Schunk}
+\includegraphics{analyzePower-003}
+
+\end{itemize}
+
+\end{document}
