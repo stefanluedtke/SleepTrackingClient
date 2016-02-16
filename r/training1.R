@@ -1,7 +1,7 @@
 #notizen hierzu:
 #1. andere sinnvolle featueres/kombinationen?
 #2. liefert hohe sensit., geringe spez.
-#3. regression und lda fast gleich
+#3. regression und lda (fast) gleich
 #4. qda viel besser (auf trainingsdaten)
 
 library(seewave)
@@ -154,11 +154,26 @@ length(y[y==1&p==1&!(is.na(p))])/length(y[y==1&!(is.na(p))])
 
 #model bauen (mit lda)
 require(MASS)
+
 model=lda(y~.,data=data.frame(features))
 yfit=predict(model,data.frame(features))
 
 p=as.numeric(levels(yfit$class))[yfit$class]
 plot(c(s1z,w1z),type="l")
+lines(p,col="red")
+
+
+#model bauen (mit svm)
+require(e1071)
+ysvm=y[complete.cases(features)]
+featuressvm=features[complete.cases(features),]
+ysvm=factor(ysvm)
+
+model=svm(ysvm~.,data=data.frame(featuressvm))
+yfit=predict(model,data.frame(featuressvm))
+
+p=as.numeric(yfit)-1
+plot(c(s1z,w1z)[complete.cases(features)],type="l")
 lines(p,col="red")
 
 #Bewertung:
@@ -173,5 +188,39 @@ length(y[y==1&p==1&!(is.na(p))])/length(y[y==1&!(is.na(p))])
 #parameter: anzahl der features
 #orientation-daten benutzen
 
-#TODO: testdaten generieren und spez darauf angucken
+#testdaten:
+test=read.csv("data/training1/test1.csv")
+
+testlp=test$x
+testlp[abs(testlp)<0.1]=0
+testz=zcr(testlp,25,25*60,plot=FALSE)
+testz=testz[,2]
+
+#testmag=sqrt(test$x^2+test$y^2+test$z^2)
+#testz=feature(25*60,testmag,mean,0)
+
+
+#features berechnen
+BEFORE=10
+AFTER=5
+testf=matrix(nrow=length(testz),ncol=(BEFORE+AFTER+1))
+for(i in (BEFORE+1):(length(testz)-(AFTER+1))){
+  testf[i, ]=testz[(i-BEFORE):(i+AFTER)]
+}
+
+
+#klassifikation (lda)
+yfit=predict(model,data.frame(testf))
+p=as.numeric(levels(yfit$class))[yfit$class]
+
+plot(testz,type="l")
+lines(p,col="red")
+
+#klassifikation (svm)
+testfsvm=testf[complete.cases(testf),]
+yfit=predict(model,data.frame(testfsvm))
+p=as.numeric(yfit)-1
+
+plot(testz[complete.cases(testf)],type="l")
+lines(p,col="red")
 
