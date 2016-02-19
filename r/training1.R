@@ -5,7 +5,7 @@
 #4. qda viel besser (auf trainingsdaten)
 
 library(seewave)
-setwd("/home/stefan/workspace-tizen2/SleepTracking/r")
+setwd("/home/stefan/workspace-tizen2/r")
 
 feature=function(wsize,data,ffunct,overlap){
   start=1-(wsize-overlap)
