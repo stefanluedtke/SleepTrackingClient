@@ -1,7 +1,7 @@
 setwd("/home/stefan/workspace-tizen2/SleepTracking/r")
 
 #HR-Daten: (hab nur ruhig dagesessen)
-h=read.csv("data/hrData_1455101103728.csv")
+h=read.csv("data/HR/ruhepuls.csv")
 h$time=(h$time-h$time[1])/1000
 plot(h$time,h$hr,type="l")
 

@@ -1,12 +1,52 @@
-\documentclass{article}
+\documentclass[11pt]{scrartcl}
+
+\usepackage{natbib,amsmath,amsfonts}
+\usepackage[utf8]{inputenc}
+\usepackage[ngerman]{babel}
+\usepackage{listings}
+\usepackage[justification=centering]{caption}
+\usepackage{subcaption}
+\usepackage{pdflscape}
+\usepackage{tabularx}
+\usepackage{float}
+
+%TODO: 1/25s, 1s, 1 min, 10 min, BT, WLAN jeweils mit Accel, Orien und Beides!!
 
 \begin{document}
 \SweaveOpts{concordance=TRUE}
 
-\title{Analyse der Akkulaufzeit}
+\title{Die Akkulaufzeit der Samsung Gear S bei verschiedenen Arten der Datenaufzeichnung}
+\author{Stefan Lüdtke}
 \maketitle
 
+\section{Einführung}
+Mit der Samsung Gear S können Sensordaten, wie z.B. Beschleunigungsdaten oder Gyroskop-Daten, aufgezeichnet werden. Die Aufzeichnung sollte derart erfolgen, dass es möglichst lange dauert, bis der Akku der Uhr leer ist. Zur Aufzeichnung stehen verschiedene Verfahren zur Verfügung: 
+\begin{itemize}
+\item Jeder Sensorwert wird direkt in eine Datei geschrieben
+\item Es werden erst einige Sensorwerte gesammelt, die dann gemeinsam in eine Datei geschrieben werden
+\item Die Werte werden über Bluetooth zu einem anderen Gerät gestreamt und dort gespeichert
+\item Die Werte werden über WLAN (mittels WebSocket-Protokoll) zu einem anderen Gerät gestreamt und dort gespeichert
+\end{itemize}
+\section{Beschreibung der Experimente}
+Folgende Sensordaten wurden für die Aufzeichnung betrachtet:
+\begin{itemize}
+\item Beschleunigungs-Daten
+\item Gyroskop-Daten
+\item Beschleunigungs- und Gyroskop-Daten 
+\end{itemize}
+Diese wurden jeweils auf folgende Arten aufgezeichnet:
+\begin{itemize}
+\item jeden Sensorwert schreiben
+\item Sensorwerte ein Mal pro Sekunde schreiben
+\item Sensorwerte ein Mal pro Minute schreiben
+\item Sensorwerte ein Mal alle 10 Minuten schreiben
+\item Sensorwerte per Bluetooth streamen
+\item Sensorwerte per WLAN (WebSocket-Protokoll) streamen
+\end{itemize}
+Für alle betrachteten Sensordaten und Aufzeichnungsarten wurde jeweils ein Experiment durchgeführt, sodass sich insgesamt 18 Experimente ergeben. Für jedes dieser Experimente wurde der Akku der Smartwatch zunächst voll geladen, dann wurden die Daten für 5 bis 9 Stunden aufgezeichnet. Zusätzlich wurde jeweils der Akkustand aufgezeichnet. Mit diesen Daten wurde dann eine lineare Regression durchgeführt, um den Zeitpunkt zu extrapolieren, zu dem die Uhr den Akkustand 0 erreicht hätte. Ein Beispiel für eine solche lineare Regression ist in Abbildung \ref{fig:linreg} zu sehen.
+
 \begin{figure}[H]
+\centering
 <<echo=FALSE,fig=TRUE>>=
 setwd("/home/stefan/workspace-tizen2/SleepTracking/r")
 
@@ -16,7 +56,7 @@ berechnenull=function(a1){
 lma1=lm(power~time,a1)
 preda1=predict.lm(lma1,newdata=data.frame(time=1:58000))
 
-plot(1:58000,preda1,col="red",type="l")
+plot(1:58000,preda1,col="red",type="l",xlab="Zeit (s)",ylab="Akkustand")
 lines(a1$time,a1$power)
 
 sek=names(which.min(abs(preda1)))
@@ -26,51 +66,45 @@ as.numeric(sek)/3600
 a1=read.csv("data/power_tests/neu/nuraccelsek.csv",comment.char = "#", colClasses = c(NA,NA,"NULL","NULL","NULL"))
 as=berechnenull(a1)
 @
-\caption{Beschleunigungsdaten, 1x pro Sekunde gespeichert}
+\caption{lineares Modell (rot) des Akkustandes, für das Experiment, in dem Beschleunigungsdaten 1x pro Sekunde gespeichert wurden}
+\label{fig:linreg}
 \end{figure}
 
 
-\begin{figure}[H]
-<<echo=FALSE,fig=TRUE>>=
+<<echo=FALSE,fig=FALSE>>=
 a1=read.csv("data/power_tests/neu/nuraccelmin.csv",comment.char = "#", colClasses = c(NA,NA,"NULL","NULL","NULL"))
 am=berechnenull(a1)
 @
-\caption{Beschleunigungsdaten, 1x pro Minute gespeichert}
-\end{figure}
 
 
-\begin{figure}[H]
-<<echo=FALSE,fig=TRUE>>=
+<<echo=FALSE,fig=FALSE>>=
 a1=read.csv("data/power_tests/neu/nurorienmin.csv",comment.char = "#", colClasses = c(NA,NA,"NULL","NULL","NULL"))
 om=berechnenull(a1)
 @
-\caption{Gyro-Daten 1x pro Minute aufgezeichnet}
-\end{figure}
 
 
-\begin{figure}[H]
-<<echo=FALSE,fig=TRUE>>=
+<<echo=FALSE,fig=FALSE>>=
 a1=read.csv("data/power_tests/neu/beidessek.csv",comment.char = "#", colClasses = c(NA,NA,"NULL","NULL","NULL"))
 bs=berechnenull(a1)
 @
-\caption{Beides 1x pro Sekunde gespeichert}
-\end{figure}
 
 
-\begin{figure}[H]
-<<echo=FALSE,fig=TRUE>>=
+<<echo=FALSE,fig=FALSE>>=
 a1=read.csv("data/power_tests/neu/beidesmin.csv",comment.char = "#", colClasses = c(NA,NA,"NULL","NULL","NULL"))
 bm=berechnenull(a1)
 @
-\caption{Beides 1x pro Minute gespeichert}
-\end{figure}
 
+
+\section{Ergebnisse}
+Die Ergebnisse sind in Abbildung \ref{fig:results} dargestellt. 
 
 \begin{figure}[H]
+\centering
 <<echo=FALSE,fig=TRUE>>=
 barplot(c(as,am,om,bs,bm),ylab="Laufzeit in Stunden", names.arg=c("Accel, s","Accel, min","Gyro, min", "Beides, s","Beides, min"))
 @
 \caption{Noch mal zur Uebersicht}
+\label{fig:results}
 \end{figure}
 
 \end{document}

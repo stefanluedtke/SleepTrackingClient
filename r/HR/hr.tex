@@ -1,0 +1,114 @@
+\documentclass[11pt]{scrartcl}
+
+\usepackage{natbib,amsmath,amsfonts}
+\usepackage[utf8]{inputenc}
+\usepackage[ngerman]{babel}
+\usepackage{listings}
+\usepackage[justification=centering]{caption}
+\usepackage{subcaption}
+\usepackage{pdflscape}
+\usepackage{tabularx}
+\usepackage{float}
+
+\usepackage{Sweave}
+\begin{document}
+\input{hr-concordance}
+
+\title{Plausibilitäts-Prüfung des Herzfrequenz-Sensors der Samsung Gear S}
+\author{Stefan Lüdtke}
+\maketitle
+
+\section{Einführung}
+In dieser Arbeit soll überprüft werden, ob die Samsung Gear S plausible Herzfrequenz-Werte liefert. Hierzu werden drei Experimente mit einem bzw. zwei Probanden durchgeführt, in denen der Ruhe- bzw. Belastungspuls von der Samsung Gear S sowie manuell gemessen wird.
+
+Die Datenaufnahme auf der Samsung Gear S erfolgt mit einer selbst geschriebenen App, die die HeartRate-API von Tizen 2.2 ausliest und die Werte speichert.
+
+\section{Experiment 1: Ruhepuls}
+In diesem Experiment wird zunächst der Ruhepuls der Probanden 5 mal manuell am Handgelenk gemessen. Anschließend werden über einen Zeitraum von 10 Minuten mit der Samsung Gear S Messungen des Ruhepulses durchgeführt. Dabei wird jeder neue Wert, den der Sensor liefert, direkt aufgezeichnet. Dadurch ergibt sich eine mittlere Aufzeichnungsfrequenz von 11.3 s, mit einer Standardabweichung von 4.6 s. Dieses Experiment wurde mit zwei Probanden durchgeführt.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{cccccc}
+ & 1. Mesung & 2. Messung & 3. Messung & 4. Messung & 5. Messung \\
+ Puls & 74 & 67 & 68 & 69 & 67 \\
+\end{tabular}
+\caption{Manuelle Ruhepuls-Messung am Handgelenk, Proband 1}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{cccccc}
+ & 1. Mesung & 2. Messung & 3. Messung & 4. Messung & 5. Messung \\
+ Puls & 67 & 62 & 60 & 63 & 63 \\
+\end{tabular}
+\caption{Manuelle Ruhepuls-Messung am Handgelenk, Proband 2}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics{hr-001}
+\caption{Ruhepuls, gemessen mit der Samsung Gear S, Proband 1}
+\end{figure}
+
+
+
+\begin{figure}[H]
+\centering
+\includegraphics{hr-002}
+\caption{Ruhepuls, gemessen mit der Samsung Gear S, Proband 2}
+\end{figure}
+
+
+\section{Experiment 2: Belastungspuls (1)}
+Dieses Experiment wurde nur von einem Probanden durchgeführt. In diesem Experiment soll die Herzfrequenz, die von der Samsung Gear S bei einer Belastung gemessen wird, mit der manuell am Handgelenk gemessenen Herzfrequenz verglichen werden.  Hierzu führt der Proband eine sportliche Aktivität (20 Hock-Streck-Sprünge) aus, direkt im Anschluss wird die Herzfrequenz über 30 Sekunden manuell gemessen. Zeitgleich zur manuellen Messung wird ein Messvorgang der Samsung Gear S gestartet. Dieser Vorgang wird 3 mal wiederholt.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{cccc}
+ & 1. Mesung & 2. Messung & 3. Messung  \\
+manuelle gemessener Puls & 112 & 123 & 150 \\
+Von der Gear S gemessenen Pulses & 105 & 84 & 94 \\
+Abweichung & 7 & 39  & 56
+\end{tabular}
+\caption{Vergleich des manuell und von der Gear S gemessenen Belastungspulses}
+\end{table}
+
+\section{Experiment 3: Belastungspuls (2)}
+Mit diesem Experiment soll ausgeschlossen werden, dass die Messung der Samsung Gear S durch die erfolgte Aktivität beeinflusst wurde. Beispielsweise ist denkbar, dass die starke Bewegung der Uhr dazu führt, dass höhere Herzfrequenz-Messwerte ausgegeben werden. Deshalb wird in diesem Experiment genau so wie in Experiment 2 vorgegangen. Der einzige Unterschied besteht darin, dass die Uhr erst nach der sportlichen Aktivität angelegt wird.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{cccc}
+ & 1. Mesung & 2. Messung & 3. Messung  \\
+ manuelle gemessener Puls & 140 & 142 & 150 \\
+ Von der Gear S gemessenen Pulses & 99 & 152 & 121  \\
+ Abweichung & 41 & 10  & 29 
+\end{tabular}
+\caption{Vergleich des manuell und von der Gear S gemessenen Belastungspulses}
+\end{table}
+
+\section{Ergebnisse}
+In der folgenden Tabelle werden die Ergebnisse zusammengefasst. Abgesehen von den unten dargestellten Messwerten wurde noch eine weitere Beobachtung gemacht: Bei den Experimenten 2 und 3 war die Herzfrequenz-Messung der Samsung Gear S nicht besonders zuverlässig, d.h. in einigen Fällen konnte nach dem Starten der Herzfrequenz-Aufzeichnung kein Wert ermittelt werden bzw. das Messen dauerte sehr lange. In diesen Fällen wurde der gesamte Versuch wiederholt.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{cc}
+\textbf{Experiment 1, Proband 1} & \\
+Durchschnitt manuelle Messung & 69  \\
+Durchschnitt Gear S-Messung & 67.4\\
+Standardabweichung Gear S-Messung & 7.73 \\
+Abweichung Gear S von Manuell & 1.6 \\ 
+\textbf{Experiment 1, Proband 2} & \\
+Durchschnitt manuelle Messung & 63  \\
+Durchschnitt Gear S-Messung & 70.3\\
+Standardabweichung Gear S-Messung & 4.97 \\
+Abweichung Gear S von Manuell & 7.7 \\ 
+\textbf{Experiment 2} & \\
+Durchschnittliche Abweichung & 34\\
+\textbf{Experiment 3} & \\
+Durchschnittliche Abweichung & 26.7
+\end{tabular}
+\caption{Zusammenfassung der Ergebnisse}
+\end{table}
+
+\end{document}

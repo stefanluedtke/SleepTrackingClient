@@ -66,14 +66,14 @@ window.onload = function () {
     	}
     });
     
-    window.addEventListener('deviceorientation', function(e) {
-    	if(saveOrien){
-            	orienData.push({time: Date.now(), alpha: e.alpha, beta: e.beta, gamma: e.gamma});
-            	if(orienData.length>(17*60)){
-            		saveOrientation();
-            	}
-    	}
-    });
+//    window.addEventListener('deviceorientation', function(e) {
+//    	if(saveOrien){
+//            	orienData.push({time: Date.now(), alpha: e.alpha, beta: e.beta, gamma: e.gamma});
+//            	if(orienData.length>(17*60)){
+//            		saveOrientation();
+//            	}
+//    	}
+//    });
     
        
    //look for checked checkboxes and initialize accordingly
