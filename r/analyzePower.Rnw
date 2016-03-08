@@ -76,9 +76,13 @@ a1=read.csv("data/power_tests/neu/nuraccelmin.csv",comment.char = "#", colClasse
 am=berechnenull(a1)
 @
 
+<<echo=FALSE,fig=FALSE>>=
+a1=read.csv("data/power_tests/neu/nuroriensek.csv",comment.char = "#", colClasses = c(NA,NA,"NULL","NULL","NULL"))
+os=berechnenull(a1)
+@
 
 <<echo=FALSE,fig=FALSE>>=
-a1=read.csv("data/power_tests/neu/nurorienmin.csv",comment.char = "#", colClasses = c(NA,NA,"NULL","NULL","NULL"))
+a1=read.csv("data/power_tests/neu/nurorienmin2.csv",comment.char = "#", colClasses = c(NA,NA,"NULL","NULL","NULL"))
 om=berechnenull(a1)
 @
 
@@ -94,6 +98,35 @@ a1=read.csv("data/power_tests/neu/beidesmin.csv",comment.char = "#", colClasses 
 bm=berechnenull(a1)
 @
 
+<<echo=FALSE,fig=FALSE>>=
+a1=read.csv("data/power_tests/neu/nuraccelwlan.csv",comment.char = "#", colClasses = c(NA,NA,"NULL","NULL","NULL"))
+aw=berechnenull(a1)
+@
+
+<<echo=FALSE,fig=FALSE>>=
+a1=read.csv("data/power_tests/neu/nurorienwlan.csv",comment.char = "#", colClasses = c(NA,NA,"NULL","NULL","NULL"))
+ow=berechnenull(a1)
+@
+
+<<echo=FALSE,fig=FALSE>>=
+a1=read.csv("data/power_tests/neu/beideswlan.csv",comment.char = "#", colClasses = c(NA,NA,"NULL","NULL","NULL"))
+bw=berechnenull(a1)
+@
+
+<<echo=FALSE,fig=FALSE>>=
+a1=read.csv("data/power_tests/neu/nuraccel10min2.csv",comment.char = "#", colClasses = c(NA,NA,"NULL","NULL","NULL"))
+az=berechnenull(a1)
+@
+
+<<echo=FALSE,fig=FALSE>>=
+a1=read.csv("data/power_tests/neu/nurorien10min2.csv",comment.char = "#", colClasses = c(NA,NA,"NULL","NULL","NULL"))
+oz=berechnenull(a1)
+@
+
+<<echo=FALSE,fig=FALSE>>=
+a1=read.csv("data/power_tests/neu/beides10min.csv",comment.char = "#", colClasses = c(NA,NA,"NULL","NULL","NULL"))
+bz=berechnenull(a1)
+@
 
 \section{Ergebnisse}
 Die Ergebnisse sind in Abbildung \ref{fig:results} dargestellt. 
@@ -101,9 +134,20 @@ Die Ergebnisse sind in Abbildung \ref{fig:results} dargestellt.
 \begin{figure}[H]
 \centering
 <<echo=FALSE,fig=TRUE>>=
-barplot(c(as,am,om,bs,bm),ylab="Laufzeit in Stunden", names.arg=c("Accel, s","Accel, min","Gyro, min", "Beides, s","Beides, min"))
+library(gridBase)
+
+names=c("Accel, s","Accel, min","Accel, 10 min","Gyro, sek","Gyro, min","Gyro, 10 min", "Beides, s","Beides, min","Beides, 10 min","Accel, WLAN", "Gyro, WLAN","Beides, WLAN")
+midpts=barplot(c(as,am,az,os,om,oz,bs,bm,bz,aw,ow,bw),ylab="Laufzeit in Stunden")
+
+
+vps <- baseViewports()
+grid::pushViewport(vps$inner, vps$figure, vps$plot)
+
+grid::grid.text(names,
+    x = grid::unit(midpts, "native"), y=grid::unit(-1, "lines"),
+    just="right", rot=50)
 @
-\caption{Noch mal zur Uebersicht}
+\caption{Uebersicht}
 \label{fig:results}
 \end{figure}
 

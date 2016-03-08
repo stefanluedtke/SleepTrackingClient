@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2016.2.19)  2 MAR 2016 09:52
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2016.2.19)  7 MAR 2016 20:02
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -827,17 +827,17 @@ File: analyzePower-001.pdf Graphic file (type pdf)
 <use analyzePower-001.pdf>
 Package pdftex.def Info: analyzePower-001.pdf used on input line 51.
 (pdftex.def)             Requested size: 334.60571pt x 334.62286pt.
- <analyzePower-006.pdf, id=12, 433.62pt x 433.62pt>
-File: analyzePower-006.pdf Graphic file (type pdf)
+ <analyzePower-013.pdf, id=12, 433.62pt x 433.62pt>
+File: analyzePower-013.pdf Graphic file (type pdf)
 
-<use analyzePower-006.pdf>
-Package pdftex.def Info: analyzePower-006.pdf used on input line 70.
+<use analyzePower-013.pdf>
+Package pdftex.def Info: analyzePower-013.pdf used on input line 75.
 (pdftex.def)             Requested size: 334.60571pt x 334.62286pt.
- [2 <./analyzePower-001.pdf>] [3 <./analyzePower-006.pdf>] (./analyzePower.aux)
+ [2 <./analyzePower-001.pdf>] [3 <./analyzePower-013.pdf>] (./analyzePower.aux)
  ) 
 Here is how much of TeX's memory you used:
  8337 strings out of 494976
- 123345 string characters out of 6179137
+ 123342 string characters out of 6179137
  222301 words of memory out of 5000000
  11395 multiletter control sequences out of 15000+600000
  20530 words of font info for 48 fonts, out of 8000000 for 9000
@@ -847,7 +847,7 @@ Here is how much of TeX's memory you used:
 are/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/tex
 live/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texlive/te
 xmf-dist/fonts/type1/public/amsfonts/cm/cmssbx10.pfb>
-Output written on analyzePower.pdf (3 pages, 206410 bytes).
+Output written on analyzePower.pdf (3 pages, 206723 bytes).
 PDF statistics:
  44 PDF objects out of 1000 (max. 8388607)
  29 compressed objects within 1 object stream

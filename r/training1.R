@@ -5,7 +5,7 @@
 #4. qda viel besser (auf trainingsdaten)
 
 library(seewave)
-setwd("/home/stefan/workspace-tizen2/r")
+setwd("/home/stefan/workspace-tizen2/SleepTracking/r")
 
 feature=function(wsize,data,ffunct,overlap){
   start=1-(wsize-overlap)
@@ -22,6 +22,11 @@ feature=function(wsize,data,ffunct,overlap){
   return(result)
 }
 
+#funktion, die activity-counts berechnet. funktioniert gut mit 0.01 und 0.05. aus Nakazaki14.
+generateCount=function(dat){
+  sum(dat>0.05)/(25*60)
+}
+
 s1=read.csv("data/training1/sleep1.csv")
 s1$time=(s1$time-s1$time[1])/1000
 
@@ -30,14 +35,16 @@ w1$time=(w1$time-w1$time[1])/1000
 
 
 #-------------------------
-#alles mit mittelwerten
+#alles mit mittelwerten oder threshold-count
 
 #mittelwerte berechnen
 s1mag=sqrt(s1$x^2+s1$y^2+s1$z^2)
-s1a=feature(25*60,s1mag,mean,0)
+#s1a=feature(25*60,s1mag,mean,0)
+s1a=feature(25*60,s1mag,generateCount,0)
 
 w1mag=sqrt(w1$x^2+w1$y^2+w1$z^2)
-w1a=feature(25*60,w1mag,mean,0)
+#w1a=feature(25*60,w1mag,mean,0)
+w1a=feature(25*60,w1mag,generateCount,0)
 
 
 #features berechnen
@@ -188,16 +195,26 @@ length(y[y==1&p==1&!(is.na(p))])/length(y[y==1&!(is.na(p))])
 #parameter: anzahl der features
 #orientation-daten benutzen
 
+#--------------------------------
+#alles mit ActiGraph Activity Count Verfahren
+
+#bandpass-filter (bei actigraph ist das ein analoger filter vor dem sampling)
+#aufsummieren (entspr. mittelwerte bilden)
+
+
+
+#--------------------------
+
 #testdaten:
 test=read.csv("data/training1/test1.csv")
 
-testlp=test$x
-testlp[abs(testlp)<0.1]=0
-testz=zcr(testlp,25,25*60,plot=FALSE)
-testz=testz[,2]
+# testlp=test$x
+# testlp[abs(testlp)<0.1]=0
+# testz=zcr(testlp,25,25*60,plot=FALSE)
+# testz=testz[,2]
 
-#testmag=sqrt(test$x^2+test$y^2+test$z^2)
-#testz=feature(25*60,testmag,mean,0)
+testmag=sqrt(test$x^2+test$y^2+test$z^2)
+testz=feature(25*60,testmag,generateCount,0)
 
 
 #features berechnen
